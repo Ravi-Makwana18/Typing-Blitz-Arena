@@ -1,25 +1,25 @@
 html{
-  background: #212121;
+  background: #2d2d2d;
 }
 
 body{
   font-family: 'Source Code Pro', monospace;
-  background: #212121;
-  color: #464b50;
+  background: #2d2d2d;
+  color: #787f86;
   font-family: 'Poppins';
 }
 
 a{
-  color: #52575d;
+  color: #787f86;
 }
 .yellow{
-  color: #ffc02dda;
+  color: #8763bcda;
 }
 .correct{
-  color: #29bb89;
+  color: #1a9435;
 }
 .wrong{
-  color: #e84545;
+  color: #d03232;
   text-decoration: underline;
 }
 .current{
@@ -89,7 +89,7 @@ input:focus, textarea:focus, select:focus, a:focus{
   outline: 0 ;
 }
 a:focus,a:hover{
-  color: #ffe969;
+  color: #ccda93;
   text-decoration: none;
 }
 

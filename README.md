@@ -1,3 +1,22 @@
-# Typing-Blitz-Arena
-Developed a comprehensive website using HTML,JavaScript and MongoDB that Gives user’s typing speed According to basicWords or hardWords chosen by the user, Displays Score of the user per 30s or 60s.
-Utilized simple JS concepts that checks users typing speed.
+# Typing Blitz Arena 🎯⌨️
+
+**Typing Blitz Arena** is a responsive, real-time typing speed test game designed to help users improve their typing speed and accuracy in an engaging way. Built with modern web technologies, the game features interactive gameplay, score tracking, and a leaderboard system using a MongoDB database.
+
+## 🚀 Live Demo
+
+[🔗 Play Now](https://your-deployed-link.com)  
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- HTML5, CSS3, JavaScript
+- Axios for HTTP requests
+- Responsive layout for all devices
+
+### Backend
+- Node.js with Express.js
+- MongoDB for storing words
+
+---
