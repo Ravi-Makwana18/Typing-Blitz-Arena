@@ -4,11 +4,18 @@ const timeName = document.getElementById("timeName");
 const time = document.getElementById("time");
 const cwName = document.getElementById("cwName");
 const cw = document.getElementById("cw");
+const wpmName = document.getElementById("wpmName");
+const wpm = document.getElementById("wpm");
+const accuracyName = document.getElementById("accuracyName");
+const accuracy = document.getElementById("accuracy");
 const restartBtn = document.getElementById("restartBtn");
 const thirty = document.getElementById("thirty");
-const sixty = document = document.getElementById("sixty");
+const sixty = document.getElementById("sixty");
 const beg = document.getElementById("beg");
 const pro = document.getElementById("pro");
+const resultsModal = document.getElementById("resultsModal");
+const tryAgainBtn = document.getElementById("tryAgainBtn");
+const shareBtn = document.getElementById("shareBtn");
 
 // --- Configuration ---
 const API_BASE_URL = 'https://typing-blitz-arena.vercel.app/';
@@ -55,19 +62,30 @@ let flag = 0;
 let factor = 2; 
 let seconds; 
 let difficulty = 1;
+let startTime = 0;
+let totalCharactersTyped = 0;
+let totalErrors = 0;
+let currentWordErrors = 0;
 
 // --- Event Listeners ---
 inputItem.addEventListener('input', function (event) {
   if (flag === 0) {
     flag = 1;
+    startTime = Date.now();
     timeStart();
   }
+  
   const charEntered = event.data;
+  totalCharactersTyped++;
+  
   if (/\s/g.test(charEntered)) {
     checkWord();
   } else {
     currentWord();
   }
+  
+  // Update real-time metrics
+  updateRealTimeMetrics();
 });
 
 thirty.addEventListener("click", function () {
@@ -106,21 +124,50 @@ pro.addEventListener("click", function () {
 
 restartBtn.addEventListener("click", restartTest);
 
+// Results modal event listeners
+tryAgainBtn.addEventListener("click", function() {
+  hideResultsModal();
+  restartTest();
+});
+
+shareBtn.addEventListener("click", function() {
+  shareResults();
+});
+
+// Close modal when clicking outside
+resultsModal.addEventListener("click", function(e) {
+  if (e.target === resultsModal) {
+    hideResultsModal();
+  }
+});
+
 // --- Core Game Functions ---
 
 function restartTest() {
   wordsSubmitted = 0;
   wordsCorrect = 0;
+  totalCharactersTyped = 0;
+  totalErrors = 0;
+  currentWordErrors = 0;
   flag = 0;
+  startTime = 0;
 
   clearInterval(seconds);
 
   time.classList.remove("current");
   cw.classList.remove("current");
+  wpm.classList.remove("current");
+  accuracy.classList.remove("current");
+  
   time.innerText = timer;
   timeName.innerText = "Time";
   cw.innerText = wordsCorrect;
   cwName.innerText = "Words";
+  wpm.innerText = "0";
+  wpmName.innerText = "WPM";
+  accuracy.innerText = "100%";
+  accuracyName.innerText = "Accuracy";
+  
   inputItem.disabled = false;
   inputItem.value = '';
   inputItem.focus();
@@ -133,6 +180,7 @@ function timeStart() {
   limitInvisible();
   seconds = setInterval(function () {
     time.innerText--;
+    updateRealTimeMetrics(); // Update metrics every second
     if (time.innerText == "0") {
       timeOver();
       clearInterval(seconds);
@@ -144,6 +192,11 @@ function timeOver() {
   inputItem.disabled = true;
   restartBtn.focus();
   displayScore();
+  
+  // Show results modal after a short delay
+  setTimeout(() => {
+    showResultsModal();
+  }, 1000);
 }
 
 function limitColor(itema, itemr) {
@@ -166,19 +219,26 @@ function limitInvisible() {
 }
 
 function displayScore() {
-  let percentageAcc = 0;
-  if (wordsSubmitted > 0) {
-    percentageAcc = Math.floor((wordsCorrect / wordsSubmitted) * 100);
-  }
+  const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
+  const finalWPM = calculateWPM(timeElapsed);
+  const finalAccuracy = calculateAccuracy();
 
   time.classList.add("current");
   cw.classList.add("current");
+  wpm.classList.add("current");
+  accuracy.classList.add("current");
 
-  time.innerText = percentageAcc + "%";
-  timeName.innerText = "Accuracy";
+  time.innerText = Math.round(timeElapsed * 60) + "s";
+  timeName.innerText = "Time";
 
-  cw.innerText = factor * wordsCorrect;
-  cwName.innerText = "WPM";
+  cw.innerText = wordsCorrect;
+  cwName.innerText = "Correct";
+
+  wpm.innerText = finalWPM;
+  wpmName.innerText = "WPM";
+
+  accuracy.innerText = finalAccuracy + "%";
+  accuracyName.innerText = "Accuracy";
 }
 
 function currentWord() {
@@ -189,11 +249,20 @@ function currentWord() {
   if (!currentSpan) return;
 
   const curSpanWord = currentSpan.innerText.trim();
+  
+  // Reset current word errors for new word
+  if (wordEntered.length === 1) {
+    currentWordErrors = 0;
+  }
 
   if (wordEntered === curSpanWord.substring(0, wordEntered.length)) {
     colorSpan(currentID, 2);
   } else {
     colorSpan(currentID, 3);
+    if (wordEntered.length <= curSpanWord.length) {
+      currentWordErrors++;
+      totalErrors++;
+    }
   }
 }
 
@@ -233,9 +302,126 @@ function checkWord() {
       const nextWordRect = nextWordElement.getBoundingClientRect();
 
       if (nextWordRect.top < textDisplayRect.top || nextWordRect.bottom > textDisplayRect.bottom) {
-          textItem.scrollTop = nextWordElement.offsetTop - (textDisplayRect.height / 2) + (nextWordRect.height / 2);
+          testItem.scrollTop = nextWordElement.offsetTop - (textDisplayRect.height / 2) + (nextWordRect.height / 2);
       }
   }
+}
+
+// --- New Metrics Functions ---
+
+function calculateWPM(timeInMinutes) {
+  if (timeInMinutes === 0) return 0;
+  // Standard WPM calculation: (total characters typed / 5) / time in minutes
+  // Subtract errors to get net WPM
+  const grossWPM = (totalCharactersTyped / 5) / timeInMinutes;
+  const netWPM = Math.max(0, grossWPM - (totalErrors / timeInMinutes));
+  return Math.round(netWPM);
+}
+
+function calculateAccuracy() {
+  if (totalCharactersTyped === 0) return 100;
+  const accuracyPercent = ((totalCharactersTyped - totalErrors) / totalCharactersTyped) * 100;
+  return Math.max(0, Math.round(accuracyPercent));
+}
+
+function updateRealTimeMetrics() {
+  if (startTime === 0) return;
+  
+  const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
+  
+  if (timeElapsed > 0) {
+    const currentWPM = calculateWPM(timeElapsed);
+    const currentAccuracy = calculateAccuracy();
+    
+    // Update display during typing
+    if (flag === 1 && time.innerText !== "0") {
+      wpm.innerText = currentWPM;
+      accuracy.innerText = currentAccuracy + "%";
+      cw.innerText = wordsCorrect;
+    }
+  }
+}
+
+// --- Results Modal Functions ---
+
+function showResultsModal() {
+  const timeElapsed = (Date.now() - startTime) / 1000 / 60;
+  const finalWPM = calculateWPM(timeElapsed);
+  const finalAccuracy = calculateAccuracy();
+  
+  // Update modal content
+  document.getElementById("finalWPM").innerText = finalWPM;
+  document.getElementById("finalAccuracy").innerText = finalAccuracy + "%";
+  document.getElementById("finalCorrect").innerText = wordsCorrect;
+  document.getElementById("finalTotal").innerText = wordsSubmitted;
+  
+  // Show modal
+  resultsModal.classList.add("show");
+}
+
+function hideResultsModal() {
+  resultsModal.classList.remove("show");
+}
+
+function shareResults() {
+  const timeElapsed = (Date.now() - startTime) / 1000 / 60;
+  const finalWPM = calculateWPM(timeElapsed);
+  const finalAccuracy = calculateAccuracy();
+  
+  const shareText = `🔥 Just completed a typing test on Typing Blitz Arena!
+
+📊 My Results:
+⚡ WPM: ${finalWPM}
+🎯 Accuracy: ${finalAccuracy}%
+✅ Correct Words: ${wordsCorrect}/${wordsSubmitted}
+⏱️ Time: ${timer}s (${difficulty === 1 ? 'Beginner' : 'Pro'} mode)
+
+Think you can beat my score? Try it at: ${window.location.href}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'Typing Blitz Arena Results',
+      text: shareText,
+      url: window.location.href
+    });
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    navigator.clipboard.writeText(shareText).then(() => {
+      // Show temporary notification
+      const notification = document.createElement('div');
+      notification.textContent = 'Results copied to clipboard! 📋';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #34d399, #10b981);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        z-index: 10000;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(52, 211, 153, 0.4);
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }).catch(() => {
+      alert('Unable to share results. Your browser might not support this feature.');
+    });
+  }
+}
+
+// --- Performance Tracking ---
+
+function getPerformanceGrade(wpm, accuracy) {
+  if (wpm >= 60 && accuracy >= 95) return { grade: 'S+', color: '#fbbf24', emoji: '🏆' };
+  if (wpm >= 50 && accuracy >= 90) return { grade: 'S', color: '#34d399', emoji: '⭐' };
+  if (wpm >= 40 && accuracy >= 85) return { grade: 'A', color: '#60a5fa', emoji: '🔥' };
+  if (wpm >= 30 && accuracy >= 80) return { grade: 'B', color: '#a78bfa', emoji: '💪' };
+  if (wpm >= 20 && accuracy >= 70) return { grade: 'C', color: '#fb7185', emoji: '👍' };
+  return { grade: 'D', color: '#9ca3af', emoji: '📚' };
 }
 
 function colorSpan(id, color) {

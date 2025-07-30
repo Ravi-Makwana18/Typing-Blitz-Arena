@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
     <meta name="description"
-        content="This Speed Typing Test will give you an acuurate speed test and help increase your typing speed" />
+        content="This Speed Typing Test will give you an accurate speed test and help increase your typing speed" />
 
     <title>TypingBlitzArena | Test your typing speed | Typing Game</title>
 
@@ -20,16 +20,11 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Source+Code+Pro:wght@300;400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Source+Code+Pro:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- fontawesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
         integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
 
 
 </head>
@@ -58,8 +53,18 @@
             </div>
 
             <div class="stat-block if">
-                <div id="cwName" class="stat-name yellow if">CW</div>
+                <div id="cwName" class="stat-name yellow if">Words</div>
                 <div id="cw" class="details if">0</div>
+            </div>
+
+            <div class="stat-block if">
+                <div id="wpmName" class="stat-name yellow if">WPM</div>
+                <div id="wpm" class="details if">0</div>
+            </div>
+
+            <div class="stat-block if">
+                <div id="accuracyName" class="stat-name yellow if">Accuracy</div>
+                <div id="accuracy" class="details if">100%</div>
             </div>
         </div>
 
@@ -70,17 +75,50 @@
 
         <div class="input-area center">
             <textarea rows="1" class="text-input" id="textInput" autofocus autocomplete="off" autocorrect="off"
-                autocapitalize="off" spellcheck="false"></textarea>
+                autocapitalize="off" spellcheck="false" placeholder="Start typing here..."></textarea>
         </div>
 
         <div class="restart-button center">
-            <a id="restartBtn" class="current" href="#">
+            <a id="restartBtn" class="current" href="#" title="Restart Test">
                 <i class="fas fa-redo"></i>
             </a>
         </div>
 
-        <footer class="center">©2024 <a class="grey"
-                href="https://shreyagarwal13.github.io/shrey_personal_website/">Ravi Makwana</a></footer>
+        <footer class="center">
+            <div>
+                ©2024 Made with <span style="color: #f87171;">❤️</span> by 
+                <a href="https://github.com/Ravi-Makwana18" target="_blank">Ravi Makwana</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="results-modal">
+        <div class="results-content">
+            <h2 class="results-title">Test Complete! 🎉</h2>
+            <div class="results-grid">
+                <div class="result-item">
+                    <div id="finalWPM" class="result-value">0</div>
+                    <div class="result-label">WPM</div>
+                </div>
+                <div class="result-item">
+                    <div id="finalAccuracy" class="result-value">100%</div>
+                    <div class="result-label">Accuracy</div>
+                </div>
+                <div class="result-item">
+                    <div id="finalCorrect" class="result-value">0</div>
+                    <div class="result-label">Correct Words</div>
+                </div>
+                <div class="result-item">
+                    <div id="finalTotal" class="result-value">0</div>
+                    <div class="result-label">Total Words</div>
+                </div>
+            </div>
+            <div class="results-actions">
+                <button id="tryAgainBtn" class="results-btn">Try Again</button>
+                <button id="shareBtn" class="results-btn secondary">Share Results</button>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap script -->
