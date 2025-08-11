@@ -4,7 +4,7 @@
 
 ## 🚀 Live Demo
 
-[🔗 Play Now](https://your-deployed-link.com)  
+[🔗 Play Now](https://typing-blitz-arena.vercel.app/)  
 
 ---
 
