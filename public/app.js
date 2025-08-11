@@ -368,13 +368,13 @@ function shareResults() {
   const finalWPM = calculateWPM(timeElapsed);
   const finalAccuracy = calculateAccuracy();
   
-  const shareText = `🔥 Just completed a typing test on Typing Blitz Arena!
+  const shareText = `Just completed a typing test on Typing Blitz Arena!
 
-📊 My Results:
-⚡ WPM: ${finalWPM}
-🎯 Accuracy: ${finalAccuracy}%
-✅ Correct Words: ${wordsCorrect}/${wordsSubmitted}
-⏱️ Time: ${timer}s (${difficulty === 1 ? 'Beginner' : 'Pro'} mode)
+My Results:
+WPM: ${finalWPM}
+Accuracy: ${finalAccuracy}%
+Correct Words: ${wordsCorrect}/${wordsSubmitted}
+Time: ${timer}s (${difficulty === 1 ? 'Beginner' : 'Pro'} mode)
 
 Think you can beat my score? Try it at: ${window.location.href}`;
 
